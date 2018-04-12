@@ -1,0 +1,4 @@
+---
+def_group: users
+def_groups: adm,sudo
+def_shell: /bin/bash

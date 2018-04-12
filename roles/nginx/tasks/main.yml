@@ -1,0 +1,54 @@
+---
+- name: increase nginx open file limits
+  template:
+    src: 10-nginx.conf.j2
+    dest: /etc/security/limits.d/10-nginx.conf
+  notify: reboot required
+
+- name: make a strong DHE parameter available
+  copy:
+    force: false
+    src: dhparam.pem
+    dest: /etc/ssl/dhparam.pem
+
+- name: configure nginx defaults
+  tags: reconfigure
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: copy site specific configuration
+  tags: reconfigure
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/nginx/conf.d/{{ item }}"
+  with_items: "{{ with_site_conf }}"
+  notify: restart nginx
+
+- name: purge default site
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - /etc/nginx/sites-enabled/default
+  - /etc/nginx/sites-available/default
+  notify: restart nginx
+
+- name: make configured site available
+  tags: reconfigure
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/nginx/sites-available/{{ item }}"
+  with_items: "{{ with_sites }}"
+  notify: restart nginx
+
+- name: enable site
+  tags: reconfigure
+  file:
+    state: link
+    src: "/etc/nginx/sites-available/{{ item }}"
+    dest: "/etc/nginx/sites-enabled/{{ item }}"
+  with_items: "{{ with_sites }}"
+  notify: restart nginx
+  ignore_errors: "{{ ansible_check_mode }}"

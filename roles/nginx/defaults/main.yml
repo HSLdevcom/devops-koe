@@ -1,0 +1,8 @@
+---
+with_site_conf:
+- ssl.conf
+
+nginx:
+  worker_rlimit_nofile: 8192
+  worker_connections: 4096
+  max_body_size: 1m

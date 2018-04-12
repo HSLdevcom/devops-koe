@@ -1,0 +1,9 @@
+# Nginx static site configuration
+# vim: set syntax=nginx :
+
+server {
+  listen 80;
+  server_name _;
+  root /var/www;
+  index index.html;
+}

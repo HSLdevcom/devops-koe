@@ -1,0 +1,37 @@
+# nginx.conf
+# vim: set syntax=nginx :
+
+user www-data;
+worker_processes auto;
+worker_rlimit_nofile {{ nginx.worker_rlimit_nofile | default(8192) }};
+pid /run/nginx.pid;
+
+events {
+  worker_connections {{ nginx.worker_connections | default(4096) }};
+}
+
+http {
+  charset utf-8;
+  server_tokens off;
+
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+
+  keepalive_timeout 65;
+  reset_timedout_connection on;
+  client_max_body_size {{ nginx.max_body_size | default('1m') }};
+
+  access_log /var/log/nginx/access.log;
+  error_log /var/log/nginx/error.log;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  gzip on;
+  gzip_disable "msie6";
+  gzip_types text/plain text/css text/xml text/javascript application/xml application/xml+rss application/x-javascript application/vnd.ms-fontobject application/x-font-ttf font/opentype;
+
+  include /etc/nginx/conf.d/*.conf;
+  include /etc/nginx/sites-enabled/*;
+}

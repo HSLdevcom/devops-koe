@@ -1,0 +1,31 @@
+---
+- name: create and configure user accounts
+  user:
+    append: true
+    name: "{{ item.name }}"
+    comment: "{{ item.real }}"
+    group: "{{ item.group | default(def_group) }}"
+    groups: "{{ item.groups | default(def_groups) }}"
+    shell: "{{ item.shell | default(def_shell) }}"
+  with_items:
+  - "{{ administrators }}"
+  - "{{ developers | default([]) }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: inject authorized keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ lookup('file', item.name + '.pub') }}"
+  with_items:
+  - "{{ administrators }}"
+  - "{{ developers | default([]) }}"
+  when: not ansible_check_mode
+
+- name: enable promotion to superuser
+  template:
+    mode: 0440
+    src: sudoers.j2
+    dest: "/etc/sudoers.d/{{ item.name }}"
+  with_items:
+  - "{{ administrators }}"
+  - "{{ developers | default([]) }}"

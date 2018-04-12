@@ -1,0 +1,3 @@
+# Increase nginx open file limits
+www-data  soft  nofile  {{ nginx.worker_rlimit_nofile }}
+www-data  hard  nofile  {{ nginx.worker_rlimit_nofile }}

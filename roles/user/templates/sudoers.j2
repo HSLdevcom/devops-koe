@@ -1,0 +1,5 @@
+{% if item.superuser is defined %}
+{{ item.name }} ALL = (ALL) NOPASSWD: ALL
+{% else %}
+# no root for {{ item.name }}
+{% endif %}
