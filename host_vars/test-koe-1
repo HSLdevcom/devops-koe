@@ -1,0 +1,10 @@
+---
+with_site_conf: []
+
+with_sites:
+- ha-echo-site
+
+developers:
+- name: koe
+  real: Koe Käyttäjä
+  add: docker

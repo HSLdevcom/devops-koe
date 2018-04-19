@@ -1,0 +1,17 @@
+# Nginx site configuration
+# vim: set syntax=nginx :
+
+upstream ecco {
+  server localhost:8081;
+  server localhost:8082;
+}
+
+server {
+  listen 80 default_server;
+  server_name _;
+  root /var/www;
+
+  location / {
+    proxy_pass http://ecco;
+  }
+}

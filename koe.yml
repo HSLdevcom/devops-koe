@@ -1,0 +1,11 @@
+---
+- name: Nginx
+  hosts: "{{ target }}"
+  become: true
+
+  # Please, make sure the file roles/nginx/files/dhparam.pem
+  # exists before using this playbook!
+
+  roles:
+  - role: user
+  - role: nginx
